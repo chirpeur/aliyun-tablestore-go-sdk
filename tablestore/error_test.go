@@ -1,9 +1,13 @@
 package tablestore
 
 import (
+	"errors"
 	"fmt"
-	"github.com/aliyun/aliyun-tablestore-go-sdk/tablestore/otsprotocol"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+
+	"github.com/aliyun/aliyun-tablestore-go-sdk/tablestore/otsprotocol"
 )
 
 func TestOtsError_Error(t *testing.T) {
@@ -22,4 +26,19 @@ func TestOtsError_Error(t *testing.T) {
 	if otsErr.Error() != oldErrStr.Error() {
 		t.Errorf("error string not equal, old %s new %s", oldErrStr.Error(), otsErr.Error())
 	}
+}
+
+func TestErrorValue(t *testing.T) {
+	badHappen := func() error {
+		return &OtsError{
+			Message:        "foo is bad",
+			RequestId:      "123",
+			HttpStatusCode: 403,
+			error:          ErrFoo,
+		}
+	}
+	err := badHappen()
+	assert.True(t, errors.Is(err, ErrFoo))
+	_, ok := err.(*OtsError)
+	assert.True(t, ok)
 }

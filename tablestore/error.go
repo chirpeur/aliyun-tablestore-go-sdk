@@ -23,6 +23,7 @@ var (
 	errNoChecksum              = errors.New("[tablestore] expect checksum")
 	errChecksum                = errors.New("[tablestore] checksum failed")
 	errInvalidInput            = errors.New("[tablestore] invalid input")
+	ErrFoo 					   = errors.New("[tablestore] error_foo")
 )
 
 const (
@@ -47,7 +48,11 @@ type OtsError struct {
 	RequestId string
 
 	HttpStatusCode int
+	error
 }
+
+func (e *OtsError) Unwrap() error { return e.error }
+
 
 func (e *OtsError) Error() string {
 	return fmt.Sprintf("%s %s %s", e.Code, e.Message, e.RequestId)
